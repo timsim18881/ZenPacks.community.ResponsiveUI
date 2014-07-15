@@ -1,0 +1,52 @@
+<?xml version = "1.0" encoding = "utf-8"?>
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser = "http://namespaces.zope.org/browser"
+    xmlns:zcml="http://namespaces.zope.org/zcml"
+    >
+
+    <browser:page
+        for="*"
+        name="Themes"
+        class=".themes.ThemesView"
+        permission="zenoss.View"
+        />
+
+    <browser:viewlet
+       name="Themes"
+        url="/zport/dmd/Themes"
+        weight="8"
+        parentItem="Advanced"
+        manager="Products.ZenUI3.navigation.interfaces.ISecondaryNavigationMenu"
+        class="Products.ZenUI3.navigation.menuitem.SecondaryNavigationMenuItem"
+        permission="zenoss.View"
+        layer="Products.ZenUI3.navigation.interfaces.IZenossNav"
+    />
+
+    <!-- Browser Resources -->
+    <browser:resourceDirectory
+        name="ZenPacks_community_ResponsiveUI"
+        directory="resources"
+        />
+
+    <!-- JavaScript needed for all Zenoss pages. -->
+    <browser:viewlet
+        name="js-responsiveuiviews"
+        paths="/++resource++ZenPacks_community_ResponsiveUI/js/views.js"
+        for="*"
+        weight="20"
+        manager="Products.ZenUI3.browser.interfaces.IJavaScriptSrcManager"
+        class="Products.ZenUI3.browser.javascript.JavaScriptSrcBundleViewlet"
+        permission="zope2.Public"
+        />
+
+    <browser:viewlet
+        name="css-responsiveui"
+        paths="/++resource++ZenPacks_community_ResponsiveUI/css/style.css"
+        for="*"
+        weight="20"
+        manager="Products.ZenUI3.browser.interfaces.IJavaScriptSrcManager"
+        class=".style.StyleSrcBundleViewlet"
+        permission="zope2.Public"
+        />
+</configure>
