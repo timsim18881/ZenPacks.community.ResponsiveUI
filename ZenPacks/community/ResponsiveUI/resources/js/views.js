@@ -1,9 +1,16 @@
 (function(){
-	setTimeout(function () {
+	var t = setInterval(function () {
 		var btn = document.createElement("div"),
 			parent = document.getElementById("jobswidget"),
-			header_height = Ext.getCmp("header_panel").height,
-			sidebar_width = Ext.getCmp("master_panel").width;
+			header_height = 0,
+			sidebar_width = 0;
+
+		if (!Ext.getCmp("header_panel")) return;
+
+		clearInterval(t);
+
+		header_height = Ext.getCmp("header_panel").height;
+		sidebar_width = Ext.getCmp("master_panel").width;
 
 		btn.id = "zen_btn";
 		btn.innerText = "Zen";
@@ -28,10 +35,17 @@
 			if (Ext.getCmp("header_panel").height > 0) {
 				Ext.getCmp("header_panel").setHeight(0);
 				Ext.getCmp("master_panel").setWidth(0);
+				document.cookie = "zen_mode=1";
 			} else {
 				Ext.getCmp("header_panel").setHeight(header_height);
 				Ext.getCmp("master_panel").setWidth(sidebar_width);
+				document.cookie = "zen_mode=";
 			}
+		};
+
+		if (document.cookie.indexOf("zen_mode=1") != -1 ) {
+			Ext.getCmp("header_panel").setHeight(0);
+			Ext.getCmp("master_panel").setWidth(0);
 		}
-	}, 3000);
+	}, 50);
 })();
