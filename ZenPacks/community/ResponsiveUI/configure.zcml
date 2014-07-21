@@ -5,7 +5,7 @@
     xmlns:zcml="http://namespaces.zope.org/zcml"
     >
 
-    <browser:page
+    <!-- <browser:page
         for="*"
         name="Themes"
         class=".themes.ThemesView"
@@ -21,7 +21,7 @@
         class="Products.ZenUI3.navigation.menuitem.SecondaryNavigationMenuItem"
         permission="zenoss.View"
         layer="Products.ZenUI3.navigation.interfaces.IZenossNav"
-    />
+    /> -->
 
     <!-- Browser Resources -->
     <browser:resourceDirectory

@@ -9,4 +9,6 @@ import Globals
 
 from Products.ZenUtils.Utils import unused
 
+import ZenPacks.community.ResponsiveUI.patches
+
 unused(Globals)
