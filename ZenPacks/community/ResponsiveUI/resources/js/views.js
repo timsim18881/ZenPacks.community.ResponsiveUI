@@ -38,12 +38,12 @@
 				Ext.getCmp("header_panel").setHeight(0);
 				if (Ext.getCmp("master_panel"))
 					Ext.getCmp("master_panel").setWidth(0);
-				document.cookie = "zen_mode=1";
+				document.cookie = "zen_mode=1;path=/";
 			} else {
 				Ext.getCmp("header_panel").setHeight(header_height);
 				if (Ext.getCmp("master_panel"))
 					Ext.getCmp("master_panel").setWidth(sidebar_width);
-				document.cookie = "zen_mode=";
+				document.cookie = "zen_mode=;path=/";
 			}
 		};
 
