@@ -3,7 +3,8 @@
 		var btn = document.createElement("div"),
 			parent = document.getElementById("jobswidget"),
 			header_height = 0,
-			sidebar_width = 0;
+			sidebar_width = 0,
+			service_panel_width = 0;
 
 		if (!Ext.getCmp("header_panel")) return;
 
@@ -14,43 +15,61 @@
 		if (Ext.getCmp("master_panel"))
 			sidebar_width = Ext.getCmp("master_panel").width;
 
+		if (Ext.getCmp("service_treepanel"))
+			service_panel_width = Ext.getCmp("service_treepanel").width;
+
 		btn.id = "zen_btn";
-		btn.innerText = "Zen mode";
+		btn.innerHTML = "Zen mode";
 		btn.className = parent.className;
 
 		parent.appendChild(btn);
 
-		btn.style = Ext.apply(btn.style, {
-			position: "relative",
-			display: "inline-block",
-			left: "-64px",
-			top: "-1px",
-			fontSize: "12px",
-			fontWeight: "bold",
-			height: "24px",
-			paddingTop: "4px"
-		});
+		btn.style.setProperty('position', 'relative');
+		btn.style.setProperty('display', 'inline-block');
+		btn.style.setProperty('left', '-64px');
+		btn.style.setProperty('top', '-1px');
+		btn.style.setProperty('font-size', '12px');
+		btn.style.setProperty('font-weight', 'bold');
+		btn.style.setProperty('height', '24px');
+		btn.style.setProperty('padding-top', '4px');
 
 		btn.onclick = function (e) {
 			e.stopPropagation();
 
 			if (Ext.getCmp("header_panel").height > 0) {
+				
 				Ext.getCmp("header_panel").setHeight(0);
+				
 				if (Ext.getCmp("master_panel"))
 					Ext.getCmp("master_panel").setWidth(0);
+				
+				if (Ext.getCmp("service_treepanel"))
+					Ext.getCmp("service_treepanel").setWidth(0);
+				
 				document.cookie = "zen_mode=1;path=/";
 			} else {
+
 				Ext.getCmp("header_panel").setHeight(header_height);
+				
 				if (Ext.getCmp("master_panel"))
 					Ext.getCmp("master_panel").setWidth(sidebar_width);
+				
+				if (Ext.getCmp("service_treepanel"))
+					Ext.getCmp("service_treepanel").setWidth(service_panel_width);
+
 				document.cookie = "zen_mode=;path=/";
 			}
 		};
 
 		if (document.cookie.indexOf("zen_mode=1") != -1 ) {
+			
 			Ext.getCmp("header_panel").setHeight(0);
+
 			if (Ext.getCmp("master_panel"))
 				Ext.getCmp("master_panel").setWidth(0);
+
+			if (Ext.getCmp("service_treepanel"))
+				Ext.getCmp("service_treepanel").setWidth(0);
 		}
 	}, 50);
 })();
