@@ -17,7 +17,9 @@ MOBILE_USER_AGENTS = [
     'samsung',
     'nokia',
     'opera mini',
-    'applewebkit'
+    'iphone',
+    'ipad',
+    'ipod'
 ]
 
 UserInterfaceSettings.header_bg = ""
@@ -51,6 +53,7 @@ def here(fn):
     """Shorthand to get current directory"""
     return os.path.join(os.path.dirname(__file__), fn)
 
+
 @monkeypatch('Products.ZenUI3.browser.pages.ITInfrastructure')
 def __call__(self):
     """
@@ -58,6 +61,7 @@ def __call__(self):
     """
     is_mobile = DEBUG_MOBILE # defaults to False
     ua = self.request.environ['HTTP_USER_AGENT'].lower()
+
     for agent in MOBILE_USER_AGENTS:
         if agent in ua:
             is_mobile = True
