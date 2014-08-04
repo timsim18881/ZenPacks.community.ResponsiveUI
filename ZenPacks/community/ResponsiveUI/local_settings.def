@@ -1,0 +1,4 @@
+# Rename to local_settings.py to take effect
+
+# Uncomment to debug mobile UI on desktop browser
+# DEBUG_MOBILE = True
