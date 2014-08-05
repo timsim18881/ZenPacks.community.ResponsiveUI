@@ -1,14 +1,7 @@
-html, body {
-	padding: 0;
-	margin: 0;
-	font-family: Helvetica,sans-serif;
-	font-size: 1em;
-}
-
-#header {
+#mobile_header {
 	height: 45px;
-	background: url('/zport/dmd/logo.png') no-repeat scroll 5px 7px transparent;
-	background-color: rgba(0, 0, 0, 0.5);
+	background: url('/zport/dmd/logo.png') no-repeat scroll 55px 7px transparent;
+	background-color: rgba(0, 0, 0, 0.7);
 }
 
 .severity-critical,
