@@ -7,6 +7,7 @@
 .severity-critical,
 .severity-error,
 .severity-warning,
+.severity-info,
 .severity-icon5,
 .severity-icon4,
 .severity-icon3,
@@ -25,4 +26,25 @@
 .severity-warning,
 .severity-icon3 {
 	background-position: 0px -38px;
+}
+
+.severity-info {
+	background-position: 0px -60px;
+}
+
+#deviceBox #device_icon {
+	padding-top: 20px;
+	padding-left: 20px;
+}
+
+.big-status-up,
+.big-status-down {
+	display: inline-block;
+	height: 28px;
+	width: 20px;
+	background: url('/++resource++zenui/img/up-down-sprite.png') no-repeat scroll 0px -55px transparent;
+}
+
+.big-status-down {
+	background-position: 0px -85px;
 }

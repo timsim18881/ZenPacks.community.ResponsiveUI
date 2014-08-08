@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10, user-scalable=yes">
+
+    <title>Zenoss: Device</title>
+
+    <link rel="stylesheet" href="/++resource++ZenPacks_community_ResponsiveUI/css/libs.css">
+    <link rel="stylesheet" href="/++resource++ZenPacks_community_ResponsiveUI/css/style.css">
+
+    <script src="/++resource++ZenPacks_community_ResponsiveUI/js/libs.js"></script>
+
+    <script>
+        $(function() {
+            var uid = location.pathname.split("#")[0].replace("/devicedetail", ""),
+                prod_states = [],
+                priorities = [],
+                device = {},
+                payload = [{
+                     "action": "DeviceRouter",
+                    "method": "getProductionStates",
+                    "data": [{}],
+                    "type": "rpc",
+                    "tid": 5
+                }, {
+                    "action": "DeviceRouter",
+                    "method": "getPriorities",
+                    "data": [{}],
+                    "type": "rpc",
+                    "tid": 6
+                }, {
+                   "action": "DeviceRouter",
+                    "method": "getInfo",
+                    "data": [{
+                        "uid": uid,
+                        "keys": [
+                            "ipAddressString", "deviceClass", "name", "icon", "events", "status", "productionState", "priority", "collector", "createdTime", "location", "groups", "systems", "links", "comments"
+                            ]
+                        }],
+                    "type":"rpc",
+                    "tid": 7
+                }];
+
+            $.ajax({
+                url: "../device_router",
+                type: "POST",
+                data: JSON.stringify(payload),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                    prod_states = data[0].result.data;
+                    priorities = data[1].result.data;
+                    device = data[2].result.data;
+
+                    //console.log(data);
+
+                    $("title").html("Zenoss: " + device.name);
+                    $("#device_name").html(device.name);
+                    $("#device_icon").attr("src", device.icon);
+                    $(".device_class").html(device.deviceClass.name);
+
+                    $("#device_events").html(
+                        ' <i class="severity-critical"></i>' + device.events.critical.count
+                        + ' <i class="severity-error"></i>' + device.events.error.count
+                        + ' <i class="severity-warning"></i>' + device.events.warning.count
+                        + ' <i class="severity-info"></i>' + device.events.info.count
+                    );
+
+                    if (device.status)
+                        $("#device_status").html('<i class="big-status-up"></i> Up');
+
+                    $.each(prod_states, function (k, v) {
+                        if (v.value == device.productionState)
+                            $("#device_prod_state").html(v.name);
+                    });
+
+                    $.each(priorities, function (k, v) {
+                        if (v.value == device.priority)
+                            $("#device_priority").html(v.name);
+                    });
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div data-role="page"  id="itinfrastructure">
+        <div data-role="header">
+            <div id="mobile_header"></div>
+            <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon ui-btn-left">Menu</a>
+        </div>
+
+        <div role="main" class="ui-content">
+            <ul id="deviceBox" data-role="listview" data-filter="true">
+                <li>
+                    <img id="device_icon" src="" />
+                    <h2 id="device_name">Device</h2>
+                    <p class="device_class"></p>
+                </li>
+                <li>
+                    <h2 id="device_events"></h2>
+                    <p>EVENTS</p>
+                </li>
+                <li>
+                    <h2 id="device_status"><i class="big-status-down"></i> Down</h2>
+                    <p>DEVICE STATUS</p>
+                </li>
+                <li>
+                    <h2 id="device_prod_state"></h2>
+                    <p>PRODUCTION STATE</p>
+                </li>
+                <li>
+                    <h2 id="device_priority"></h2>
+                    <p>PRIORITY</p>
+                </li>
+            </ul>
+        </div>
+
+        <div data-role="panel" id="menu_panel" data-display="overlay">
+            <ul data-role="listview">
+                <li><a data-ajax="false" href="/zport/dmd/Events/evconsole">Events</a></li>
+                <li><a data-ajax="false" href="/zport/dmd/itinfrastructure">Infrastructure</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

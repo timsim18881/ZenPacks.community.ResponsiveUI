@@ -83,6 +83,20 @@ def __call__(self):
     return original(self)
 
 
+@monkeypatch('Products.ZenUI3.browser.pages.DeviceDetails')
+def __call__(self):
+    """
+    Mobile Device details page
+    """
+    if is_mobile(self.request):
+        with open(here('resources/templates/devdetail.html')) as f:
+            t = f.read()
+        return t
+
+    # For desktop browser returns default Zenoss UI
+    return original(self)
+
+
 @monkeypatch('Products.ZenUI3.browser.eventconsole.grid.EventConsole')
 def __call__(self):
     """
