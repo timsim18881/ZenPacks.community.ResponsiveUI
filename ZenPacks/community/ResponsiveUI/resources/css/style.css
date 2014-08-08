@@ -6,17 +6,23 @@
 
 .severity-critical,
 .severity-error,
-.severity-warning {
+.severity-warning,
+.severity-icon5,
+.severity-icon4,
+.severity-icon3,
+.severity-icon2 {
 	display: inline-block;
 	height: 14px;
 	width: 16px;
 	background: url('/++resource++zenui/img/xtheme-zenoss/icon/severity-sprite.png') no-repeat scroll 0px 0px transparent;
 }
 
-.severity-error {
+.severity-error,
+.severity-icon4 {
 	background-position: 0px -20px;
 }
 
-.severity-warning {
+.severity-warning,
+.severity-icon3 {
 	background-position: 0px -38px;
 }

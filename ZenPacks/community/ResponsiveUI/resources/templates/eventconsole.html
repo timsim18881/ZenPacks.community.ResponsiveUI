@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10, user-scalable=yes">
+
+    <title>Zenoss: Events</title>
+
+    <link rel="stylesheet" href="/++resource++ZenPacks_community_ResponsiveUI/css/libs.css">
+    <link rel="stylesheet" href="/++resource++ZenPacks_community_ResponsiveUI/css/style.css">
+
+    <script src="/++resource++ZenPacks_community_ResponsiveUI/js/libs.js"></script>
+
+    <script id="eventTemplate" type="text/x-jquery-tmpl">
+        <tr>
+            <td>${eventState}</td>
+            <td><i class="severity-icon${severity}"></i></td>
+            <td><a data-ajax="false" href="${device.url}">${device.text}</a></td>
+            <td><a data-ajax="false" href="${component.url}">${component.text}</a></td>
+            <td>${eventClass.text}</td>
+            <td>${summary}</td>
+            <td>${firstTime}</td>
+            <td>${lastTime}</td>
+            <td>${count}</td>
+        </tr>
+    </script>
+
+    <script>
+        $(function() {
+            var events = [],
+                payload = {
+                    "action": "EventsRouter",
+                    "method": "query",
+                    "data": [{
+                        "uid": "/zport/dmd",
+                        "params": {
+                            "eventState": [0,1],
+                            "severity": [5,4,3,2],
+                            "tags": []
+                        },
+                        "keys": [
+                            "eventState",
+                            "severity",
+                            "device",
+                            "component",
+                            "eventClass",
+                            "summary",
+                            "firstTime",
+                            "lastTime",
+                            "count",
+                            "evid",
+                            "eventClassKey",
+                            "message"
+                        ],
+                        "page": 1,
+                        "start": 0,
+                        "limit": 50,
+                        "sort": 
+                        "severity",
+                        "dir": "DESC"
+                    }],
+                    "type": "rpc",
+                    "tid": 1
+                }
+
+            $.ajax({
+                url: "/zport/dmd/Events/evconsole_router",
+                type: "POST",
+                data: JSON.stringify(payload),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                    var $el = $("#eventBox").find("tbody"),
+                        items = data.result.events;
+
+                    console.log(data);
+                    
+                    $.each(items, function (k, item) {
+                        $el.append($("#eventTemplate").tmpl(item));
+                    });
+                    $("#eventBox").table('refresh');
+                }
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div data-role="page"  id="evconsole">
+        <div data-role="header">
+            <div id="mobile_header"></div>
+            <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon ui-btn-left">Menu</a>
+        </div>
+
+        <div role="main" class="ui-content">
+            <table data-role="table" id="eventBox" data-mode="columntoggle" class="table-stripe ui-responsive" data-column-btn-theme="b">
+                <thead>
+                    <tr>
+                        <th>Status</th>
+                        <th>Severity</th>
+                        <th>Resource</th>
+                        <th data-priority="1">Component</th>
+                        <th data-priority="2">Event Class</th>
+                        <th data-priority="3">Summary</th>
+                        <th data-priority="4">First Seen</th>
+                        <th data-priority="5">Last Seen</th>
+                        <th data-priority="6">Count</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div data-role="panel" id="menu_panel" data-display="overlay">
+            <ul data-role="listview">
+                <li><a data-ajax="false" href="/zport/dmd/Events/evconsole">Events</a></li>
+                <li><a data-ajax="false" href="/zport/dmd/itinfrastructure">Infrastructure</a></li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

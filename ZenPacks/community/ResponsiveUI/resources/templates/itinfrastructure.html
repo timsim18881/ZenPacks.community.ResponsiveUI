@@ -1,19 +1,17 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10, user-scalable=yes">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=10, user-scalable=yes">
 
-  <title>Zenoss: Devices</title>
+    <title>Zenoss: Devices</title>
 
-  <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.css" />
-  <link rel="stylesheet" href="/++resource++ZenPacks_community_ResponsiveUI/css/style.css">
+    <link rel="stylesheet" href="/++resource++ZenPacks_community_ResponsiveUI/css/libs.css">
+    <link rel="stylesheet" href="/++resource++ZenPacks_community_ResponsiveUI/css/style.css">
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.3/jquery.mobile.min.js"></script>
-  <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery.templates/beta1/jquery.tmpl.js"></script>
+    <script src="/++resource++ZenPacks_community_ResponsiveUI/js/libs.js"></script>
 
-  <script id="deviceTemplate" type="text/x-jquery-tmpl">
+    <script id="deviceTemplate" type="text/x-jquery-tmpl">
         <tr>
             <td><a data-ajax="false" href="${uid}">${name}</a></td>
             <td>${ipAddressString}</td>
@@ -26,67 +24,67 @@
         </tr>
     </script>
 
-  <script>
-    $(function() {
-        var devices = [],
-            payload = [
-            {
-                "action": "DeviceRouter",
-                "method": "getDevices",
-                "data": [{
-                    "uid": "/zport/dmd/Devices",
-                    "keys": [
-                        "name",
-                        "ipAddress",
-                        "uid",
-                        "productionState",
-                        "events",
-                        "ipAddressString",
-                        "pythonClass",
-                        "deviceClass"
-                    ],
-                    "params": {},
-                    "page": 1,
-                    "start": 0,
-                    "limit": 100,
-                    "sort": "name",
-                    "dir": "ASC"
-                }],
-                "type": "rpc",
-                "tid": 1
-            }, {
-                "action": "DeviceRouter",
-                "method": "getInfo",
-                "data": [{
-                    "uid": "/zport/dmd/Devices",
-                    "keys": ["events"]
-                }],
-                "type": "rpc",
-                "tid": 2
-            }
-        ];
+    <script>
+        $(function() {
+            var devices = [],
+                payload = [
+                {
+                    "action": "DeviceRouter",
+                    "method": "getDevices",
+                    "data": [{
+                        "uid": "/zport/dmd/Devices",
+                        "keys": [
+                            "name",
+                            "ipAddress",
+                            "uid",
+                            "productionState",
+                            "events",
+                            "ipAddressString",
+                            "pythonClass",
+                            "deviceClass"
+                        ],
+                        "params": {},
+                        "page": 1,
+                        "start": 0,
+                        "limit": 100,
+                        "sort": "name",
+                        "dir": "ASC"
+                    }],
+                    "type": "rpc",
+                    "tid": 1
+                }, {
+                    "action": "DeviceRouter",
+                    "method": "getInfo",
+                    "data": [{
+                        "uid": "/zport/dmd/Devices",
+                        "keys": ["events"]
+                    }],
+                    "type": "rpc",
+                    "tid": 2
+                }
+            ];
 
-        $.ajax({
-            url: "/zport/dmd/device_router",
-            type: "POST",
-            data: JSON.stringify(payload),
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            success: function(data) {
-                var $el = $("#deviceBox").find("tbody"),
-                    devices = data[0].result.devices;
+            $.ajax({
+                url: "/zport/dmd/device_router",
+                type: "POST",
+                data: JSON.stringify(payload),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                    var $el = $("#deviceBox").find("tbody"),
+                        devices = data[0].result.devices;
 
-                //console.log(data);
-                //$("#deviceTemplate").tmpl(devices).appendTo("#deviceBox");
+                    //console.log(data);
+                    //$("#deviceTemplate").tmpl(devices).appendTo("#deviceBox");
 
-                $.each(devices, function (k, device) {
-                    $el.append($("#deviceTemplate").tmpl(device));
-                });
-                $("#deviceBox").table('refresh');
-            }
+                    $.each(devices, function (k, device) {
+                        $el.append($("#deviceTemplate").tmpl(device));
+                    });
+                    $("#deviceBox").table('refresh');
+                }
+            });
         });
-    });
-  </script>
+    </script>
 </head>
 
 <body>

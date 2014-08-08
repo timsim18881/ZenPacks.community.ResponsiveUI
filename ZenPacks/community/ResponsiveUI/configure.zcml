@@ -46,7 +46,28 @@
         for="*"
         weight="20"
         manager="Products.ZenUI3.browser.interfaces.IJavaScriptSrcManager"
-        class=".style.StyleSrcBundleViewlet"
+        class=".viewlet.StyleSrcBundleViewlet"
+        permission="zope2.Public"
+        />
+
+    <!-- Mobile libraries and styles -->
+    <browser:viewlet
+        name="css-responsiveuilibs"
+        paths="/++resource++ZenPacks_community_ResponsiveUI/css/libs.css"
+        for="*"
+        weight="20"
+        manager="Products.ZenUI3.browser.interfaces.IJavaScriptSrcManager"
+        class=".viewlet.MobileStyleSrcBundleViewlet"
+        permission="zope2.Public"
+        />
+
+    <browser:viewlet
+        name="js-responsiveuilibs"
+        paths="/++resource++ZenPacks_community_ResponsiveUI/js/libs.css"
+        for="*"
+        weight="20"
+        manager="Products.ZenUI3.browser.interfaces.IJavaScriptSrcManager"
+        class=".viewlet.MobileJavaScriptSrcBundleViewlet"
         permission="zope2.Public"
         />
 </configure>

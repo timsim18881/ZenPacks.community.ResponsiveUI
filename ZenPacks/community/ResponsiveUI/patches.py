@@ -54,23 +54,43 @@ def here(fn):
     return os.path.join(os.path.dirname(__file__), fn)
 
 
+def is_mobile(request):
+    """
+    Returns True if User Agent seems to be mobile device
+    """
+    if DEBUG_MOBILE: # defaults to False
+        return True
+
+    ua = request.environ['HTTP_USER_AGENT'].lower()
+    for agent in MOBILE_USER_AGENTS:
+        if agent in ua:
+            return True
+    return False
+
+
 @monkeypatch('Products.ZenUI3.browser.pages.ITInfrastructure')
 def __call__(self):
     """
     Overrides default to determine if mobile browser present
     """
-    is_mobile = DEBUG_MOBILE # defaults to False
-    ua = self.request.environ['HTTP_USER_AGENT'].lower()
-
-    for agent in MOBILE_USER_AGENTS:
-        if agent in ua:
-            is_mobile = True
-
     # For mobile browser returns lite UI
-    if is_mobile:
+    if is_mobile(self.request):
         with open(here('resources/templates/itinfrastructure.html')) as f:
             t = f.read()
         return t
 
     # For desktop browser returns default Zenoss UI
+    return original(self)
+
+
+@monkeypatch('Products.ZenUI3.browser.eventconsole.grid.EventConsole')
+def __call__(self):
+    """
+    Overrides default to determine if mobile browser present
+    """
+    if is_mobile(self.request):
+        with open(here('resources/templates/eventconsole.html')) as f:
+            t = f.read()
+        return t
+
     return original(self)
