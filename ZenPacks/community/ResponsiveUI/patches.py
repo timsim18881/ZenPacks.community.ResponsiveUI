@@ -30,6 +30,8 @@ UserInterfaceSettings._properties = UserInterfaceSettings._properties + (
     {'id':'sidebar_bg', 'type':'string', 'mode':'w'},
     {'id':'main_bg', 'type':'string', 'mode':'w'},
     {'id':'main_bg_alt', 'type':'string', 'mode':'w'},
+    {'id':'use_mobile_ui', 'type':'boolean', 'mode':'w'},
+    {'id':'always_use_mobile_ui', 'type':'boolean', 'mode':'w'},
 )
 
 UserInterfaceSettings._propertyMetaData['header_bg'] = {
@@ -47,6 +49,12 @@ UserInterfaceSettings._propertyMetaData['main_bg'] = {
 UserInterfaceSettings._propertyMetaData['main_bg_alt'] = {
     'xtype': 'textfield', 'name': _t('Grid rows background 2 (Put double quotes around a value)'), 'defaultValue': '""', 'allowBlank': False
 }
+UserInterfaceSettings._propertyMetaData['use_mobile_ui'] = {
+    'xtype': 'checkbox', 'name': _t('Use mobile UI when you access Zenoss from mobile device'), 'defaultValue': 'true'
+}
+UserInterfaceSettings._propertyMetaData['always_use_mobile_ui'] = {
+    'xtype': 'checkbox', 'name': _t('ALWAYS Use mobile UI for Zenoss'), 'defaultValue': ''
+}
 
 
 def here(fn):
@@ -54,12 +62,19 @@ def here(fn):
     return os.path.join(os.path.dirname(__file__), fn)
 
 
-def is_mobile(request):
+def is_mobile(request, context=None):
     """
     Returns True if User Agent seems to be mobile device
     """
     if DEBUG_MOBILE: # defaults to False
         return True
+
+    if context:
+        settings = context.dmd.UserInterfaceSettings.getInterfaceSettings()
+        if settings.get('always_use_mobile_ui', False):
+            return True
+        if not settings.get('use_mobile_ui', True):
+            return False
 
     ua = request.environ['HTTP_USER_AGENT'].lower()
     for agent in MOBILE_USER_AGENTS:
@@ -74,7 +89,7 @@ def __call__(self):
     Overrides default to determine if mobile browser present
     """
     # For mobile browser returns lite UI
-    if is_mobile(self.request):
+    if is_mobile(self.request, self.context):
         with open(here('resources/templates/itinfrastructure.html')) as f:
             t = f.read()
         return t
@@ -88,7 +103,7 @@ def __call__(self):
     """
     Mobile Device details page
     """
-    if is_mobile(self.request):
+    if is_mobile(self.request, self.context):
         with open(here('resources/templates/devdetail.html')) as f:
             t = f.read()
         return t
@@ -102,7 +117,7 @@ def __call__(self):
     """
     Overrides default to determine if mobile browser present
     """
-    if is_mobile(self.request):
+    if is_mobile(self.request, self.context):
         with open(here('resources/templates/eventconsole.html')) as f:
             t = f.read()
         return t
