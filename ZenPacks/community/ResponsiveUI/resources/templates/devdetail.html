@@ -11,14 +11,54 @@
 
     <script src="/++resource++ZenPacks_community_ResponsiveUI/js/libs.js"></script>
 
+    <script id="componentTemplate" type="text/x-jquery-tmpl">
+        <tr>
+            <td width="20"><i class="severity-${severity}"></i></td>
+            <td>
+                <a href="#component_details_panel" data-uid="${uid}" class="compoment_detail_link">
+                    ${name}
+                </a>
+            </td>
+        </tr>
+    </script>
+
+    <script id="componentFormRow" type="text/x-jquery-tmpl">
+        <tr>
+            <td>${fieldLabel}</td>
+            <td>
+                {{if value }}
+                    {{if typeof value === 'object'}}
+                        ${value.name}
+                    {{else}}
+                        ${value}
+                    {{/if}}
+                {{/if}}
+            </td>
+        </tr>
+    </script>
+
     <script>
         $(function() {
             var uid = location.pathname.split("#")[0].replace("/devicedetail", ""),
                 prod_states = [],
                 priorities = [],
                 device = {},
+                components = {},
+                meta_type = "",
+                show_components = function() {
+                    var $el = $("#componentBox").find("tbody");
+                    $el.html("");
+
+                    console.log(meta_type);
+                    if(!meta_type) return;
+
+                    $.each(components[meta_type], function (k, v) {
+                        $el.append($("#componentTemplate").tmpl(v));
+                    });
+                    $("#componentBox").table('refresh');
+                },
                 payload = [{
-                     "action": "DeviceRouter",
+                    "action": "DeviceRouter",
                     "method": "getProductionStates",
                     "data": [{}],
                     "type": "rpc",
@@ -30,7 +70,7 @@
                     "type": "rpc",
                     "tid": 6
                 }, {
-                   "action": "DeviceRouter",
+                    "action": "DeviceRouter",
                     "method": "getInfo",
                     "data": [{
                         "uid": uid,
@@ -40,7 +80,65 @@
                         }],
                     "type":"rpc",
                     "tid": 7
+                }, {
+                    "action": "DeviceRouter",
+                    "method": "getComponents",
+                    "data": [{
+                        "uid": uid,
+                        "keys": ["uid", "name", "severity", "usesMonitorAttribute", "monitor", "monitored", "locking", "uuid", "uid", "meta_type"],
+                        "page": 1,
+                        "start": 0,
+                        "limit": 50,
+                        "sort": "name",
+                        "dir": "ASC"
+                    }],
+                    "type": "rpc",
+                    "tid": 8
                 }];
+
+            $("body>[data-role='panel']").panel();
+            $("#sidebar").listview();
+            $("#device_components").listview();
+
+            $(document).on('click', '.component_link', function(e) {
+                meta_type = $(e.target).data("meta");
+                if(location.hash == "#component")
+                    show_components();
+            });
+
+            $(document).on('click', '.compoment_detail_link', function(e) {
+                var uid = $(e.target).data("uid");
+                $.ajax({
+                    url: "../device_router",
+                    type: "POST",
+                    data: JSON.stringify({
+                        "action": "DeviceRouter",
+                        "method": "getForm",
+                        "data": [{
+                            "uid": uid
+                            }],
+                        "type":"rpc",
+                        "tid": 8
+                    }),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data) {
+                        var $el = $("#component_details").find("tbody"),
+                            form = data.result.form.items[0].items;
+
+                        $el.html("");
+                        $.each(form, function (k, v) {
+                            $el.append($("#componentFormRow").tmpl(v));
+                        });
+                        //$el.table("refresh");
+                    }
+                });
+
+                e.preventDefault();
+                return false;
+            });
+
+            $(document).on("pagebeforeshow", "#component", show_components);
 
             $.ajax({
                 url: "../device_router",
@@ -52,8 +150,28 @@
                     prod_states = data[0].result.data;
                     priorities = data[1].result.data;
                     device = data[2].result.data;
-
                     //console.log(data);
+
+                    $.each(data[3].result.data, function (k, v) {
+                        var meta_type = ZC.plural(v.meta_type);
+                        if (meta_type in components) {
+                            components[meta_type].push(v);
+                        } else {
+                            components[meta_type] = [v];
+                        }
+                    });
+
+                    $.each(components, function(k, v) {
+                        $("#device_components").append(
+                            '<li><a class="component_link" href="#component" data-meta="' + k + '">'
+                            + k
+                            + ' <span class="ui-li-count">'
+                            + components[k].length
+                            + '</span>'
+                            + '</a></li>'
+                        );
+                    });
+                    $("#device_components").listview('refresh');
 
                     $("title").html("Zenoss: " + device.name);
                     $("#device_name").html(device.name);
@@ -86,10 +204,10 @@
 </head>
 
 <body>
-    <div data-role="page"  id="itinfrastructure">
+    <div data-role="page"  id="deviceDetailNav">
         <div data-role="header">
             <div id="mobile_header"></div>
-            <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon ui-btn-left">Menu</a>
+            <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon ui-btn-right">Menu</a>
         </div>
 
         <div role="main" class="ui-content">
@@ -117,13 +235,45 @@
                 </li>
             </ul>
         </div>
+    </div>
 
-        <div data-role="panel" id="menu_panel" data-display="overlay">
-            <ul data-role="listview">
-                <li><a data-ajax="false" href="/zport/dmd/Events/evconsole">Events</a></li>
-                <li><a data-ajax="false" href="/zport/dmd/itinfrastructure">Infrastructure</a></li>
-            </ul>
+    <div data-role="page"  id="component">
+        <div data-role="header">
+            <div id="mobile_header"></div>
+            <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon ui-btn-right">Menu</a>
+            <a href="#deviceDetailNav" data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
         </div>
+
+        <div role="main" class="ui-content">
+            <table data-role="table" id="componentBox" class="table-stripe ui-responsive" data-column-btn-theme="b">
+                <thead>
+                    <tr>
+                        <th>Severity</th>
+                        <th>Name</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div data-role="panel" id="component_details_panel" data-position="right" data-display="overlay" data-theme="a">
+            <h4>Details</h4>
+            <table data-role="table" id="component_details" class="table-stripe ui-responsive" data-column-btn-theme="b">
+                <tbody></tbody>
+            </table>
+        </div><!-- /footer -->
+    </div>
+
+    <div data-role="panel" id="menu_panel" data-display="overlay" data-theme="a">
+        <ul id="sidebar">
+            <li><a data-ajax="false" href="/zport/dmd/Events/evconsole">Events</a></li>
+            <li><a data-ajax="false" href="/zport/dmd/itinfrastructure">Infrastructure</a></li>
+            <li>
+                Components
+                <ul id="device_components">
+                </ul>
+            </li>
+        </ul>
     </div>
 </body>
 </html>

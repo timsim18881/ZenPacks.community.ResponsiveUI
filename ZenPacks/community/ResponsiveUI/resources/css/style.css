@@ -8,6 +8,7 @@
 .severity-error,
 .severity-warning,
 .severity-info,
+.severity-clear,
 .severity-icon5,
 .severity-icon4,
 .severity-icon3,
@@ -30,6 +31,10 @@
 
 .severity-info {
 	background-position: 0px -60px;
+}
+
+.severity-clear {
+	background-position: 0px -100px;
 }
 
 #deviceBox #device_icon {
