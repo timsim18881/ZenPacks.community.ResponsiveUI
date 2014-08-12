@@ -37,6 +37,19 @@
         </tr>
     </script>
 
+    <script id="eventTemplate" type="text/x-jquery-tmpl">
+        <tr>
+            <td>${eventState}</td>
+            <td><i class="severity-icon${severity}"></i></td>
+            <td><a data-ajax="false" href="${component.url}">${component.text}</a></td>
+            <td>${eventClass.text}</td>
+            <td>${summary}</td>
+            <td>${firstTime}</td>
+            <td>${lastTime}</td>
+            <td>${count}</td>
+        </tr>
+    </script>
+
     <script>
         $(function() {
             var uid = location.pathname.split("#")[0].replace("/devicedetail", ""),
@@ -49,7 +62,7 @@
                     var $el = $("#componentBox").find("tbody");
                     $el.html("");
 
-                    console.log(meta_type);
+                    //console.log(meta_type);
                     if(!meta_type) return;
 
                     $.each(components[meta_type], function (k, v) {
@@ -94,11 +107,49 @@
                     }],
                     "type": "rpc",
                     "tid": 8
-                }];
+                }],
+                payload_events = {
+                    "action": "EventsRouter",
+                    "method": "query",
+                    "data": [{
+                        "uid": uid,
+                        "params": {
+                            "eventState": [0,1],
+                            "severity": [5,4,3,2],
+                            "tags": []
+                        },
+                        "keys": [
+                            "eventState",
+                            "severity",
+                            "device",
+                            "component",
+                            "eventClass",
+                            "summary",
+                            "firstTime",
+                            "lastTime",
+                            "count",
+                            "evid",
+                            "eventClassKey",
+                            "message"
+                        ],
+                        "page": 1,
+                        "start": 0,
+                        "limit": 50,
+                        "sort": "severity",
+                        "dir": "DESC"
+                    }],
+                    "type": "rpc",
+                    "tid": 9
+                };
 
             $("body>[data-role='panel']").panel();
             $("#sidebar").listview();
             $("#device_components").listview();
+
+            $("#event_details_panel").hide();
+            $(document).on('click', '.event_details_panel', function(e) {
+                $("#event_details_panel").toggle();
+            });
 
             $(document).on('click', '.component_link', function(e) {
                 meta_type = $(e.target).data("meta");
@@ -199,6 +250,25 @@
                     });
                 }
             });
+
+            $.ajax({
+                url: "/zport/dmd/Events/evconsole_router",
+                type: "POST",
+                data: JSON.stringify(payload_events),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                    var $el = $("#eventBox").find("tbody"),
+                        items = data.result.events;
+
+                    //console.log(items);
+                    
+                    $.each(items, function (k, item) {
+                        $el.append($("#eventTemplate").tmpl(item));
+                    });
+                    $("#eventBox").table('refresh');
+                }
+            });
         });
     </script>
 </head>
@@ -211,7 +281,7 @@
         </div>
 
         <div role="main" class="ui-content">
-            <ul id="deviceBox" data-role="listview" data-filter="true">
+            <ul id="deviceBox" data-role="listview">
                 <li>
                     <img id="device_icon" src="" />
                     <h2 id="device_name">Device</h2>
@@ -219,7 +289,25 @@
                 </li>
                 <li>
                     <h2 id="device_events"></h2>
-                    <p>EVENTS</p>
+                    <p><a class="event_details_panel">EVENTS &#8595;</a></p>
+
+                    <div id="event_details_panel">
+                        <table data-role="table" id="eventBox" data-mode="reflow" class="table-stripe ui-responsive" data-column-btn-theme="b">
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Severity</th>
+                                    <th data-priority="3">Component</th>
+                                    <th data-priority="2">Event Class</th>
+                                    <th data-priority="1">Summary</th>
+                                    <th data-priority="6">First Seen</th>
+                                    <th data-priority="4">Last Seen</th>
+                                    <th data-priority="5">Count</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
                 </li>
                 <li>
                     <h2 id="device_status"><i class="big-status-down"></i> Down</h2>
@@ -261,7 +349,7 @@
             <table data-role="table" id="component_details" class="table-stripe ui-responsive" data-column-btn-theme="b">
                 <tbody></tbody>
             </table>
-        </div><!-- /footer -->
+        </div>
     </div>
 
     <div data-role="panel" id="menu_panel" data-display="overlay" data-theme="a">

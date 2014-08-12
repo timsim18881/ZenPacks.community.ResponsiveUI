@@ -28,6 +28,8 @@ pages for:
  - Infrastructure
  - Events console
  - Device overview
+ - Device components
+ - Device events
 
 
 This can be turn ON/OFF on User Interface settings page in Zenoss.
