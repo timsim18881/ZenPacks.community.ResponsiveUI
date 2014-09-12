@@ -25,6 +25,7 @@ Mobile User Interface
 When accessing Zenoss from your mobile device (phone, tablet) it will show lite
 pages for:
 
+ - Add a Single Device
  - Infrastructure
  - Events console
  - Device overview

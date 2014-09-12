@@ -42,11 +42,22 @@
             <td>${eventState}</td>
             <td><i class="severity-icon${severity}"></i></td>
             <td><a data-ajax="false" href="${component.url}">${component.text}</a></td>
-            <td>${eventClass.text}</td>
-            <td>${summary}</td>
-            <td>${firstTime}</td>
-            <td>${lastTime}</td>
-            <td>${count}</td>
+            <td>
+                {{if eventClass.text}}
+                    <a class="event-summary-btn" href="#popupEvent" data-rel="popup" data-summary="${eventClass.text}">${eventClass.text.trunc(15)}</a>
+                {{/if}}
+            </td>
+            <td>
+                {{if summary}}
+                    <a class="event-summary-btn" href="#popupEvent" data-rel="popup" data-summary="${summary}">${summary.trunc(40)}</a>
+                {{/if}}
+            </td>
+            <td nowrap>
+                ${firstTime}
+                </br>
+                ${lastTime}
+            </td>
+            <td class="number">${count}</td>
         </tr>
     </script>
 
@@ -58,6 +69,7 @@
                 device = {},
                 components = {},
                 meta_type = "",
+                device_info = "",
                 show_components = function() {
                     var $el = $("#componentBox").find("tbody");
                     $el.html("");
@@ -191,6 +203,14 @@
 
             $(document).on("pagebeforeshow", "#component", show_components);
 
+            $(document).on('click', '.event-summary-btn', function(e) {
+                $("#popupEvent").html(
+                    "<pre>"
+                    + $(e.target).data("summary")
+                    + "</pre>"
+                );
+            });
+
             $.ajax({
                 url: "../device_router",
                 type: "POST",
@@ -248,6 +268,23 @@
                         if (v.value == device.priority)
                             $("#device_priority").html(v.name);
                     });
+
+                    var add_info = function(title, items) {
+                        var res = title + ": <p>";
+                        $.each(items, function (k, v) {
+                            if (v)
+                                res += "<a  data-ajax='false' href='" + v.uid + "'>" + v.name + "</a><br />";
+                        });
+                        res += "</p>";
+                        return res;
+                    }
+                    device_info += "Collector: <p>" + device.collector + "</p>";
+                    device_info += add_info("Systems", device.systems);
+                    device_info += add_info("Groups", device.groups);
+                    device_info += add_info("Location", [device.location])
+                    device_info += "Links: <p>" + device.links + "</p>";
+                    device_info += "Comments: <p>" + device.comments + "</p>";
+                    $("#device_info").html(device_info);
                 }
             });
 
@@ -298,11 +335,10 @@
                                     <th>Status</th>
                                     <th>Severity</th>
                                     <th data-priority="3">Component</th>
-                                    <th data-priority="2">Event Class</th>
-                                    <th data-priority="1">Summary</th>
-                                    <th data-priority="6">First Seen</th>
-                                    <th data-priority="4">Last Seen</th>
-                                    <th data-priority="5">Count</th>
+                                    <th data-priority="2">Event&nbsp;Class</th>
+                                    <th data-priority="3">Summary</th>
+                                    <th data-priority="4">First&nbsp;Seen<br />Last&nbsp;Seen</th>
+                                    <th data-priority="6">Count</th>
                                 </tr>
                             </thead>
                             <tbody></tbody>
@@ -321,7 +357,12 @@
                     <h2 id="device_priority"></h2>
                     <p>PRIORITY</p>
                 </li>
+                <li>
+                    <h2 id="device_info"></h2>
+                    <p></p>
+                </li>
             </ul>
+            <div data-role="popup" id="popupEvent" class="ui-content" data-theme="a"></div>
         </div>
     </div>
 
@@ -354,8 +395,11 @@
 
     <div data-role="panel" id="menu_panel" data-display="overlay" data-theme="a">
         <ul id="sidebar">
+            <li><a data-ajax="false" href="/zport/dmd/Dashboard">Dashboard</a></li>
             <li><a data-ajax="false" href="/zport/dmd/Events/evconsole">Events</a></li>
             <li><a data-ajax="false" href="/zport/dmd/itinfrastructure">Infrastructure</a></li>
+            <li><a data-ajax="false" href="/zport/dmd/reports">Reports</a></li>
+            <li><a data-ajax="false" href="/zport/dmd/editSettings">Advanced</a></li>
             <li>
                 Components
                 <ul id="device_components">

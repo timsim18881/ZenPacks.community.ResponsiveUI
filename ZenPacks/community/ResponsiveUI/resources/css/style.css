@@ -29,7 +29,8 @@
 	background-position: 0px -38px;
 }
 
-.severity-info {
+.severity-info,
+.severity-icon2 {
 	background-position: 0px -60px;
 }
 
@@ -52,4 +53,8 @@
 
 .big-status-down {
 	background-position: 0px -85px;
+}
+
+.number {
+	text-align: right !important;
 }

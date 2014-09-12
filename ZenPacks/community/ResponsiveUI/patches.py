@@ -1,8 +1,10 @@
 import os
+import json
 
 from Products.ZenUtils.Utils import monkeypatch
 from Products.Zuul.utils import ZuulMessageFactory as _t
 from Products.ZenModel.UserInterfaceSettings import UserInterfaceSettings
+from Products.Zuul.routers.device import DeviceRouter
 
 try:
     from local_settings import *
@@ -88,11 +90,38 @@ def __call__(self):
     """
     Overrides default to determine if mobile browser present
     """
+
+    def getTrees(self):
+        "Forces non-async tree load"
+
+        router = DeviceRouter(self.context.dmd, {});
+        method = router.getTree
+        deviceTree = method('/zport/dmd/Devices')
+        # system
+        systemTree = method('/zport/dmd/Systems')
+        # groups
+        groupTree = method('/zport/dmd/Groups')        
+        # location
+        locTree = method('/zport/dmd/Locations')
+        js =  """
+             Zenoss.env.device_tree_data = %s;
+             Zenoss.env.system_tree_data = %s;
+             Zenoss.env.group_tree_data = %s;
+             Zenoss.env.location_tree_data = %s;
+        """ % (json.dumps(deviceTree),
+               json.dumps(systemTree),
+               json.dumps(groupTree),
+               json.dumps(locTree))
+        return js
+
     # For mobile browser returns lite UI
     if is_mobile(self.request, self.context):
         with open(here('resources/templates/itinfrastructure.html')) as f:
             t = f.read()
-        return t
+        c = dict(
+            device_tree_data = getTrees(self)
+        )
+        return t % c
 
     # For desktop browser returns default Zenoss UI
     return original(self)

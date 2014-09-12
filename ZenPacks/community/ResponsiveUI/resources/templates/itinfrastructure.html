@@ -11,11 +11,23 @@
 
     <script src="/++resource++ZenPacks_community_ResponsiveUI/js/libs.js"></script>
 
+    <script>
+        var Zenoss = {
+            env: {
+                device_tree_data: []
+            }
+        };
+        %(device_tree_data)s
+    </script>
+
     <script id="deviceTemplate" type="text/x-jquery-tmpl">
         <tr>
             <td><a data-ajax="false" href="${uid}">${name}</a></td>
             <td>${ipAddressString}</td>
-            <td>${deviceClass.name}</td>
+            <td>
+                <a data-ajax="false" class="device_class_btn" data-id="${deviceClass.id}" data-uid="${deviceClass.uid}" href="/zport/dmd/itinfrastructure#devices:${deviceClass.id}">
+                    ${deviceClass.name}</a>
+            </td>
             <td>
                 <i class="severity-critical"></i> ${events.critical.count}
                 <i class="severity-error"></i> ${events.error.count}
@@ -27,12 +39,15 @@
     <script>
         $(function() {
             var devices = [],
+                device_class = "/zport/dmd/Devices",
+                prod_states = [],
+                priorities = [],
                 payload = [
                 {
                     "action": "DeviceRouter",
                     "method": "getDevices",
                     "data": [{
-                        "uid": "/zport/dmd/Devices",
+                        "uid": device_class,
                         "keys": [
                             "name",
                             "ipAddress",
@@ -61,28 +76,150 @@
                     }],
                     "type": "rpc",
                     "tid": 2
+                }, {
+                    "action": "DeviceRouter",
+                    "method": "getProductionStates",
+                    "data": [{}],
+                    "type": "rpc",
+                    "tid": 5
+                }, {
+                    "action": "DeviceRouter",
+                    "method": "getPriorities",
+                    "data": [{}],
+                    "type": "rpc",
+                    "tid": 6
                 }
             ];
 
-            $.ajax({
-                url: "/zport/dmd/device_router",
-                type: "POST",
-                data: JSON.stringify(payload),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function(data) {
-                    var $el = $("#deviceBox").find("tbody"),
-                        devices = data[0].result.devices;
+            if (location.hash.indexOf("#devices:") > -1) {
+                device_class = location.hash.replace("#devices:", "").split('.').join('/');
+                //console.log(device_class);
+                payload[0].data[0].uid = device_class;
+            }
 
-                    //console.log(data);
-                    //$("#deviceTemplate").tmpl(devices).appendTo("#deviceBox");
+            var load_devices = function() {
+                $.ajax({
+                    url: "/zport/dmd/device_router",
+                    type: "POST",
+                    data: JSON.stringify(payload),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data) {
+                        var $el = $("#deviceBox").find("tbody"),
+                            devices = data[0].result.devices,
+                            prod_states = data[2].result.data,
+                            priorities = data[3].result.data;
 
-                    $.each(devices, function (k, device) {
-                        $el.append($("#deviceTemplate").tmpl(device));
-                    });
-                    $("#deviceBox").table('refresh');
-                }
+                        //console.log(data);
+                        //$("#deviceTemplate").tmpl(devices).appendTo("#deviceBox");
+
+                        $el.html("");
+                        $("#deviceBox").table('refresh');
+                        $.each(devices, function (k, device) {
+                            device.deviceClass.id = device.deviceClass.uid.split('/').join('.');
+                            $el.append($("#deviceTemplate").tmpl(device));
+                        });
+                        $("#deviceBox").table('refresh');
+
+                        $.each(priorities, function (k, v) {
+                            var selected = "";
+                            if (v.name == "Normal")
+                                selected = ' selected';
+                            $("#form_priority").append('<option' + selected + ' value="' + v.value + '">' + v.name + '</option>');
+                        });
+                        $("#form_priority").selectmenu('refresh', true);
+
+                        $.each(prod_states, function (k, v) {
+                            var selected = "";
+                            if (v.name == "Production")
+                                selected = ' selected';
+                            $("#form_prod_state").append('<option' + selected + ' value="' + v.value + '">' + v.name + '</option>');
+                        });
+                        $("#form_prod_state").selectmenu('refresh', true);
+                    }
+                });
+            };
+            load_devices();
+
+            $(document).on('click', '.device_class_btn', function(e) {
+                e.preventDefault();
+
+                device_class = $(e.target).data("uid");
+                payload[0].data[0].uid = device_class;
+                load_devices();
+
+                location.hash = "devices:" + $(e.target).data("id");
+                return false;
             });
+
+            $(document).on('click', '.add_device_btn', function(e) {
+                var payload = {
+                    "action": "DeviceRouter",
+                    "method": "addDevice",
+                    "data": [{
+                        "deviceName": $("#form_name_or_ip").val(),
+                        "deviceClass": $("#form_device_class").val(),
+                        "collector": $("#form_collector").val(),
+                        "model": $("#form_model").is(':checked'),
+                        "title": $("#form_title").val(),
+                        "productionState": $("#form_prod_state").val(),
+                        "priority": $("#form_priority").val(),
+                        "snmpCommunity": "",
+                        "snmpPort": "161",
+                        "tag": "",
+                        "rackSlot": "",
+                        "serialNumber": "",
+                        "hwManufacturer": "",
+                        "hwProductName": "",
+                        "osManufacturer": "",
+                        "osProductName": "",
+                        "comments": "",
+                        "groupPaths": [],
+                        "systemPaths": []
+                    }],
+                    "type": "rpc",
+                    "tid": 443
+                };
+
+                $.ajax({
+                    url: "/zport/dmd/device_router",
+                    type: "POST",
+                    data: JSON.stringify(payload),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data) {
+                        alert("Add Device job submitted!");
+                        location.href="/zport/dmd/itinfrastructure";
+                    }
+                });
+            });
+
+            var append_device_class = function(v) {
+                var short_name = v.uid.replace("/zport/dmd/Devices", "");
+                //console.log(v);
+                $("#device_classes_list").append(
+                    '<li><a data-ajax="false" class="device_class_btn" '
+                    + 'data-uid="'+ v.uid + '" '
+                    + 'data-id="'+ v.id + '" '
+                    + 'href="/zport/dmd/itinfrastructure#devices:' + v.id + '">'
+                    + short_name
+                    + '</a></li>'
+                );
+                
+                $("#form_device_class").append(
+                    "<option value='" + short_name + "'>" + short_name + "</option>"
+                );
+                
+                $.each(v.children, function (k, v2) {
+                    append_device_class(v2);
+                });
+            };
+
+            $("#device_classes_list").listview();
+            $.each(Zenoss.env.device_tree_data[0].children, function (k, v) {
+                append_device_class(v);
+            });
+            $("#device_classes_list").listview('refresh');
         });
     </script>
 </head>
@@ -91,7 +228,10 @@
     <div data-role="page" id="itinfrastructure">
         <div data-role="header">
             <div id="mobile_header"></div>
-            <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon ui-btn-right">Menu</a>
+            <div data-type="horizontal" data-role="controlgroup" class="ui-btn-right">
+                <a href="#add_device" class="ui-btn ui-corner-all" data-rel="popup">Add device</a>
+                <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon">Menu</a>
+            </div>
         </div>
 
         <div role="main" class="ui-content">
@@ -107,12 +247,55 @@
                 </thead>
                 <tbody></tbody>
             </table>
+
+            <div data-role="popup" id="add_device" class="ui-content" data-theme="a">
+                <div style="padding:10px 20px;">
+                    <h3>Add a Single Device</h3>
+                    
+                    <label for="form_name_or_ip" class="ui-hidden-accessible">Name or IP:</label>
+                    <input type="text" name="deviceName" id="form_name_or_ip" value="" placeholder="Name or IP" data-theme="a">
+                    
+                    <label for="form_title" class="ui-hidden-accessible">Title:</label>
+                    <input name="title" id="form_title" value="" placeholder="Title" data-theme="a">
+                    
+                    <label for="form_device_class" class="ui-hidden-accessible">Device Class:</label>
+                    <select name="deviceClass" id="form_device_class" value="/" placeholder="/" data-theme="a">
+                        <option selected value="/">/</option>>
+                    </select>
+                    
+                    <label for="form_collector" class="ui-hidden-accessible">Collector:</label>
+                    <input name="collector" id="form_collector" value="localhost" placeholder="Collector" data-theme="a">
+
+                    <label for="form_prod_state" class="ui-hidden-accessible">Production State:</label>
+                    <select name="productionState" id="form_prod_state" placeholder="Production State" data-theme="a">
+                    </select>
+
+                    <label for="form_priority" class="ui-hidden-accessible">Device Priority:</label>
+                    <select name="priority" id="form_priority" placeholder="Device Priority" data-theme="a">
+                    </select>
+
+                    <label><input type="checkbox" id="form_model" name="model" checked="checked"> Model Device</label>
+
+                    <a class="add_device_btn ui-btn ui-corner-all ui-shadow ui-btn-b ui-btn-icon-left ui-icon-check">Add</a>
+                </div>
+            </div>
         </div>
 
         <div data-role="panel" id="menu_panel" data-display="overlay">
             <ul data-role="listview">
+                <li><a data-ajax="false" href="/zport/dmd/Dashboard">Dashboard</a></li>
                 <li><a data-ajax="false" href="/zport/dmd/Events/evconsole">Events</a></li>
                 <li><a data-ajax="false" href="/zport/dmd/itinfrastructure">Infrastructure</a></li>
+                <li><a data-ajax="false" href="/zport/dmd/reports">Reports</a></li>
+                <li><a data-ajax="false" href="/zport/dmd/editSettings">Advanced</a></li>
+                <li>
+                    Devices
+                    <ul id="device_classes_list">
+                        <li>
+                            <a data-ajax="false" class="device_class_btn" data-id=".zport.dmd.Devices" data-uid="/zport/dmd/Devices" href="/zport/dmd/itinfrastructure">/</a>
+                        </li>
+                    </ul>
+                </li>
             </ul>
         </div>
 

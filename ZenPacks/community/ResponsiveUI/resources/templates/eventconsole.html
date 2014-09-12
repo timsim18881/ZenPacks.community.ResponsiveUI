@@ -15,13 +15,32 @@
         <tr>
             <td>${eventState}</td>
             <td><i class="severity-icon${severity}"></i></td>
-            <td><a data-ajax="false" href="${device.url}">${device.text}</a></td>
-            <td><a data-ajax="false" href="${component.url}">${component.text}</a></td>
-            <td>${eventClass.text}</td>
-            <td>${summary}</td>
-            <td>${firstTime}</td>
-            <td>${lastTime}</td>
-            <td>${count}</td>
+            <td>
+                <a data-ajax="false" href="${device.url}">${device.text}</a>
+                {{if component}}
+                    <a data-ajax="false" href="${component.url}">
+                        {{if component.text }}
+                            ${component.text.trunc(20)}
+                        {{/if}}
+                    </a>
+                {{/if}}
+            </td>
+            <td>
+                {{if eventClass.text}}
+                    <a class="event-summary-btn" href="#popupEvent" data-rel="popup" data-summary="${eventClass.text}">${eventClass.text.trunc(15)}</a>
+                {{/if}}
+            </td>
+            <td>
+                {{if summary}}
+                    <a class="event-summary-btn" href="#popupEvent" data-rel="popup" data-summary="${summary}">${summary.trunc(40)}</a>
+                {{/if}}
+            </td>
+            <td nowrap>
+                ${firstTime}
+                </br>
+                ${lastTime}
+            </td>
+            <td class="number">${count}</td>
         </tr>
     </script>
 
@@ -62,6 +81,14 @@
                     "tid": 1
                 }
 
+            $(document).on('click', '.event-summary-btn', function(e) {
+                $("#popupEvent").html(
+                    "<pre>"
+                    + $(e.target).data("summary")
+                    + "</pre>"
+                );
+            });
+
             $.ajax({
                 url: "/zport/dmd/Events/evconsole_router",
                 type: "POST",
@@ -97,23 +124,26 @@
                     <tr>
                         <th>Status</th>
                         <th>Severity</th>
-                        <th>Resource</th>
-                        <th data-priority="1">Component</th>
-                        <th data-priority="2">Event Class</th>
+                        <th>Resource<br />Component</th>
+                        <th data-priority="2">Event&nbsp;Class</th>
                         <th data-priority="3">Summary</th>
-                        <th data-priority="4">First Seen</th>
-                        <th data-priority="5">Last Seen</th>
+                        <th data-priority="4">First&nbsp;Seen<br />Last&nbsp;Seen</th>
                         <th data-priority="6">Count</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
+
+            <div data-role="popup" id="popupEvent" class="ui-content" data-theme="a"></div>
         </div>
 
         <div data-role="panel" id="menu_panel" data-display="overlay">
             <ul data-role="listview">
+                <li><a data-ajax="false" href="/zport/dmd/Dashboard">Dashboard</a></li>
                 <li><a data-ajax="false" href="/zport/dmd/Events/evconsole">Events</a></li>
                 <li><a data-ajax="false" href="/zport/dmd/itinfrastructure">Infrastructure</a></li>
+                <li><a data-ajax="false" href="/zport/dmd/reports">Reports</a></li>
+                <li><a data-ajax="false" href="/zport/dmd/editSettings">Advanced</a></li>
             </ul>
         </div>
 
