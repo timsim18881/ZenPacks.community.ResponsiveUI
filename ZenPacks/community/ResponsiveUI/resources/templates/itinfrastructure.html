@@ -42,6 +42,10 @@
                 device_class = "/zport/dmd/Devices",
                 prod_states = [],
                 priorities = [],
+                current_page = 1,
+                total_pages = 1,
+                total_items = 0,
+                per_page = 50,
                 payload = [
                 {
                     "action": "DeviceRouter",
@@ -61,7 +65,7 @@
                         "params": {},
                         "page": 1,
                         "start": 0,
-                        "limit": 100,
+                        "limit": per_page,
                         "sort": "name",
                         "dir": "ASC"
                     }],
@@ -98,6 +102,9 @@
             }
 
             var load_devices = function() {
+                payload[0].data[0].page = current_page;
+                payload[0].data[0].start = (current_page - 1) * per_page;
+
                 $.ajax({
                     url: "/zport/dmd/device_router",
                     type: "POST",
@@ -112,6 +119,9 @@
 
                         //console.log(data);
                         //$("#deviceTemplate").tmpl(devices).appendTo("#deviceBox");
+
+                        total_items = data[0].result.totalCount;
+                        total_pages = Math.ceil(total_items / per_page);
 
                         $el.html("");
                         $("#deviceBox").table('refresh');
@@ -136,9 +146,28 @@
                             $("#form_prod_state").append('<option' + selected + ' value="' + v.value + '">' + v.name + '</option>');
                         });
                         $("#form_prod_state").selectmenu('refresh', true);
+
+                        refresh_paginator();
                     }
                 });
             };
+
+            var refresh_paginator = function() {
+                var prev = $(".paginator_left"),
+                    next = $(".paginator_right");
+
+                prev.button("enable");
+                next.button("enable");
+                if (current_page == 1)
+                    prev.button("disable");
+                if (current_page == total_pages)
+                    next.button("disable");
+
+                $(".paginator_total").html("Page " + current_page + " of " + total_pages
+                    // + ", " + total_items + " devices"
+                );
+            };
+
             load_devices();
 
             $(document).on('click', '.device_class_btn', function(e) {
@@ -220,6 +249,26 @@
                 append_device_class(v);
             });
             $("#device_classes_list").listview('refresh');
+
+            $(document).on('click', '.paginator_left', function(e) {
+                e.preventDefault();
+                if (current_page == 1) return;
+
+                current_page -= 1;
+                load_devices();
+
+                return false;
+            });
+
+            $(document).on('click', '.paginator_right', function(e) {
+                e.preventDefault();
+                if (current_page == total_pages) return;
+
+                current_page += 1;
+                load_devices();
+
+                return false;
+            });
         });
     </script>
 </head>
@@ -300,8 +349,13 @@
         </div>
 
         <div data-role="footer" data-position="fixed">
-            <a href="http://www.zenoss.com/">Zenoss Inc.</a>
-            <a href="http://www.zenoss.org/">Community</a>
+            <input data-role="button" type="button" class="paginator_left" value="Previous page" />
+            <span class="paginator_total"></span>
+            <input data-role="button" type="button" class="paginator_right" value="Next page" />
+            <div data-type="horizontal" data-role="controlgroup" class="ui-btn-right">
+                <a href="http://www.zenoss.com/">Zenoss Inc.</a>
+                <a href="http://www.zenoss.org/">Community</a>
+            </div>
         </div>
     </div>
 </body>
