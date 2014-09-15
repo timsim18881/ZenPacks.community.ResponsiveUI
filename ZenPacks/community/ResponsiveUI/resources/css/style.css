@@ -58,3 +58,7 @@
 .number {
 	text-align: right !important;
 }
+
+.device-graph {
+	max-width: 95%;
+}

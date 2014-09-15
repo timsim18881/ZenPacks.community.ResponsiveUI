@@ -47,6 +47,10 @@
     <script>
         $(function() {
             var events = [],
+                current_page = 1,
+                total_pages = 1,
+                total_items = 0,
+                per_page = 50,
                 payload = {
                     "action": "EventsRouter",
                     "method": "query",
@@ -73,7 +77,7 @@
                         ],
                         "page": 1,
                         "start": 0,
-                        "limit": 50,
+                        "limit": per_page,
                         "sort": "severity",
                         "dir": "DESC"
                     }],
@@ -89,23 +93,71 @@
                 );
             });
 
-            $.ajax({
-                url: "/zport/dmd/Events/evconsole_router",
-                type: "POST",
-                data: JSON.stringify(payload),
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                success: function(data) {
-                    var $el = $("#eventBox").find("tbody"),
-                        items = data.result.events;
+            var load_events = function() {
+                payload.data[0].page = current_page;
+                payload.data[0].start = (current_page - 1) * per_page;
 
-                    console.log(data);
-                    
-                    $.each(items, function (k, item) {
-                        $el.append($("#eventTemplate").tmpl(item));
-                    });
-                    $("#eventBox").table('refresh');
-                }
+                $.ajax({
+                    url: "/zport/dmd/Events/evconsole_router",
+                    type: "POST",
+                    data: JSON.stringify(payload),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json",
+                    success: function(data) {
+                        var $el = $("#eventBox").find("tbody"),
+                            items = data.result.events;
+
+                        total_items = data.result.totalCount;
+                        total_pages = Math.ceil(total_items / per_page);
+
+                        $el.html("");
+                        $("#eventBox").table('refresh');
+                        $.each(items, function (k, item) {
+                            $el.append($("#eventTemplate").tmpl(item));
+                        });
+                        $("#eventBox").table('refresh');
+
+                        refresh_paginator();
+                    }
+                });
+            };
+
+            var refresh_paginator = function() {
+                var prev = $(".paginator_left"),
+                    next = $(".paginator_right");
+
+                prev.button("enable");
+                next.button("enable");
+                if (current_page == 1)
+                    prev.button("disable");
+                if (current_page == total_pages)
+                    next.button("disable");
+
+                $(".paginator_total").html("page " + current_page + " of " + total_pages
+                    // + ", " + total_items + " devices"
+                );
+            };
+
+            load_events();
+
+            $(document).on('click', '.paginator_left', function(e) {
+                e.preventDefault();
+                if (current_page == 1) return;
+
+                current_page -= 1;
+                load_events();
+
+                return false;
+            });
+
+            $(document).on('click', '.paginator_right', function(e) {
+                e.preventDefault();
+                if (current_page == total_pages) return;
+
+                current_page += 1;
+                load_events();
+
+                return false;
             });
         });
     </script>
@@ -144,12 +196,19 @@
                 <li><a data-ajax="false" href="/zport/dmd/itinfrastructure">Infrastructure</a></li>
                 <li><a data-ajax="false" href="/zport/dmd/reports">Reports</a></li>
                 <li><a data-ajax="false" href="/zport/dmd/editSettings">Advanced</a></li>
+                <li><a href="http://www.zenoss.com/">Zenoss Inc.</a></li>
+                <li><a href="http://www.zenoss.org/">Community</a></li>
             </ul>
         </div>
 
         <div data-role="footer" data-position="fixed">
-            <a href="http://www.zenoss.com/">Zenoss Inc.</a>
-            <a href="http://www.zenoss.org/">Community</a>
+            <input data-role="button" type="button" class="paginator_left" value="Previous page" />
+            <span class="paginator_total"></span>
+            <input data-role="button" type="button" class="paginator_right" value="Next page" />
+            <!-- <div data-type="horizontal" data-role="controlgroup" class="ui-btn-right">
+                <a href="http://www.zenoss.com/">Zenoss Inc.</a>
+                <a href="http://www.zenoss.org/">Community</a>
+            </div> -->
         </div>
     </div>
 </body>

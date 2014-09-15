@@ -163,7 +163,7 @@
                 if (current_page == total_pages)
                     next.button("disable");
 
-                $(".paginator_total").html("Page " + current_page + " of " + total_pages
+                $(".paginator_total").html("page " + current_page + " of " + total_pages
                     // + ", " + total_items + " devices"
                 );
             };
@@ -217,8 +217,10 @@
                     contentType: "application/json; charset=utf-8",
                     dataType: "json",
                     success: function(data) {
-                        alert("Add Device job submitted!");
-                        location.href="/zport/dmd/itinfrastructure";
+                        $("#add_device").html("Add Device job submitted!");
+                        setTimeout(function () {
+                            location.href="/zport/dmd/itinfrastructure";
+                        }, 1000);
                     }
                 });
             });
@@ -337,6 +339,8 @@
                 <li><a data-ajax="false" href="/zport/dmd/itinfrastructure">Infrastructure</a></li>
                 <li><a data-ajax="false" href="/zport/dmd/reports">Reports</a></li>
                 <li><a data-ajax="false" href="/zport/dmd/editSettings">Advanced</a></li>
+                <li><a href="http://www.zenoss.com/">Zenoss Inc.</a></li>
+                <li><a href="http://www.zenoss.org/">Community</a></li>
                 <li>
                     Devices
                     <ul id="device_classes_list">
@@ -352,10 +356,10 @@
             <input data-role="button" type="button" class="paginator_left" value="Previous page" />
             <span class="paginator_total"></span>
             <input data-role="button" type="button" class="paginator_right" value="Next page" />
-            <div data-type="horizontal" data-role="controlgroup" class="ui-btn-right">
+            <!-- <div data-type="horizontal" data-role="controlgroup" class="ui-btn-right">
                 <a href="http://www.zenoss.com/">Zenoss Inc.</a>
                 <a href="http://www.zenoss.org/">Community</a>
-            </div>
+            </div> -->
         </div>
     </div>
 </body>

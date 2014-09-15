@@ -220,9 +220,7 @@
 
             $(document).on('click', '.event-summary-btn', function(e) {
                 $("#popupEvent").html(
-                    "<pre>"
-                    + $(e.target).data("summary")
-                    + "</pre>"
+                    $(e.target).data("summary")
                 );
             });
 
@@ -339,7 +337,7 @@
 
                     $.each(data.result.data, function (k, item) {
                         $el.append("<h3>" + item.title + "</h3>"
-                            + "<img src='" + item.url + "' />"
+                            + "<img class='device-graph' src='" + item.url + "' />"
                         );
                     });
                 }
