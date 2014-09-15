@@ -159,6 +159,21 @@ ZC.registerName(
     _t('Processor Pool'),
     _t('Processor Pools'));
 
+ZC.registerName(
+    'ClusterNode',
+    _t('Cluster Node'),
+    _t('Cluster Nodes'));
+
+ZC.registerName(
+    'ClusterDID',
+    _t('Cluster DID'),
+    _t('Cluster DIDs'));
+
+ZC.registerName(
+    'ClusterTransportPath',
+    _t('Cluster Transport Path'),
+    _t('Cluster Transport Paths'));
+
 /* MySQL */
 ZC.registerName('MySQLServer', _t('MySQL Server'), _t('MySQL Servers'));
 ZC.registerName('MySQLDatabase', _t('MySQL Database'), _t('MySQL Databases'));

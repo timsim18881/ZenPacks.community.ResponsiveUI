@@ -152,6 +152,16 @@
                     }],
                     "type": "rpc",
                     "tid": 9
+                },
+                payload_graphs = {
+                    "action": "DeviceRouter",
+                    "method": "getGraphDefs",
+                    "data": [{
+                        "uid": uid,
+                        "drange": 129600
+                    }],
+                    "type": "rpc",
+                    "tid": 10
                 };
 
             $("body>[data-role='panel']").panel();
@@ -161,6 +171,11 @@
             $("#event_details_panel").hide();
             $(document).on('click', '.event_details_panel', function(e) {
                 $("#event_details_panel").toggle();
+            });
+
+            $("#graphs_details_panel").hide();
+            $(document).on('click', '.graphs_details_panel', function(e) {
+                $("#graphs_details_panel").toggle();
             });
 
             $(document).on('click', '.component_link', function(e) {
@@ -288,6 +303,7 @@
                 }
             });
 
+            // Fetch events
             $.ajax({
                 url: "/zport/dmd/Events/evconsole_router",
                 type: "POST",
@@ -304,6 +320,28 @@
                         $el.append($("#eventTemplate").tmpl(item));
                     });
                     $("#eventBox").table('refresh');
+                }
+            });
+
+            // Fetch graphs
+            $.ajax({
+                url: "../device_router",
+                type: "POST",
+                data: JSON.stringify(payload_graphs),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                success: function(data) {
+                    var $el = $("#graphs_details_panel");
+
+                    if (data.result.data.length > 0)
+                        $el.html("");
+                    //console.log(data.result.data);
+
+                    $.each(data.result.data, function (k, item) {
+                        $el.append("<h3>" + item.title + "</h3>"
+                            + "<img src='" + item.url + "' />"
+                        );
+                    });
                 }
             });
         });
@@ -326,7 +364,13 @@
                 </li>
                 <li>
                     <h2 id="device_events"></h2>
-                    <p><a class="event_details_panel">EVENTS &#8595;</a></p>
+                </li>
+                <li>
+                    <h2 id="device_status"><i class="big-status-down"></i> Down</h2>
+                    <p>DEVICE STATUS</p>
+                </li>
+                <li>
+                    <h2><a class="event_details_panel">EVENTS &#8595;</a></h2>
 
                     <div id="event_details_panel">
                         <table data-role="table" id="eventBox" data-mode="reflow" class="table-stripe ui-responsive" data-column-btn-theme="b">
@@ -346,8 +390,8 @@
                     </div>
                 </li>
                 <li>
-                    <h2 id="device_status"><i class="big-status-down"></i> Down</h2>
-                    <p>DEVICE STATUS</p>
+                    <h2><a class="graphs_details_panel">GRAPHS &#8595;</a></h2>
+                    <div id="graphs_details_panel">No graphs data</div>
                 </li>
                 <li>
                     <h2 id="device_prod_state"></h2>
