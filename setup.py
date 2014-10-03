@@ -2,7 +2,7 @@
 # or saved.  Do not modify them directly here.
 # NB: PACKAGES is deprecated
 NAME = "ZenPacks.community.ResponsiveUI"
-VERSION = "2.0.2dev"
+VERSION = "2.0.4"
 AUTHOR = "V.Sergeyev <pydevside@gmail.com>"
 LICENSE = "GNU GENERAL PUBLIC LICENSE Version 2"
 NAMESPACE_PACKAGES = ['ZenPacks', 'ZenPacks.community']
