@@ -35,6 +35,13 @@ String.prototype.trunc = String.prototype.trunc ||
       return this.length>n ? this.substr(0,n-1)+'&hellip;' : this;
   };
 
+function inIframe () {
+    try {
+        return window.self !== window.top;
+    } catch (e) {
+        return true;
+    }
+}
 
 /*! Meta types */
 var _t = function(val) {return val};

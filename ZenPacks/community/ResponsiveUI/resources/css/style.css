@@ -1,7 +1,7 @@
 #mobile_header {
 	height: 45px;
 	background: url('/zport/dmd/logo.png') no-repeat scroll 55px 7px transparent;
-	background-color: rgba(0, 0, 0, 0.7);
+	background-color: #000; /*rgba(0, 0, 0, 0.7);*/
 }
 
 .severity-critical,

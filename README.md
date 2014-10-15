@@ -1,6 +1,10 @@
 ZenPacks.community.ResponsiveUI
 ===============================
 
+Make life of mobile Zenoss users a bit easier by adding light user interface to access Infrastructure, Device details, Components and Events console.
+
+ZenPack also extends Zenoss with settings for User Interface colors and full-screen mode.
+
 
 Tune Zenoss colors for your own
 -------------------------------

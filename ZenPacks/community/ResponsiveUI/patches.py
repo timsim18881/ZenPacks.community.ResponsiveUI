@@ -127,6 +127,17 @@ def __call__(self):
     return original(self)
 
 
+# @monkeypatch('Products.ZenUI3.browser.MainPageRedirect')
+# def __call__(self):
+#     """
+#     Redirects to IT Infrastructure when on mobile
+#     """
+#     if is_mobile(self.request, self.context):
+#         self.request.response.redirect('/zport/dmd/itinfrasructure')
+#     else:
+#         original(self)
+
+
 @monkeypatch('Products.ZenUI3.browser.pages.DeviceDetails')
 def __call__(self):
     """
