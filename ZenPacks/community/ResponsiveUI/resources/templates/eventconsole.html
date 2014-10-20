@@ -168,7 +168,9 @@
     <div data-role="page" id="evconsole">
         <div data-role="header">
             <div id="mobile_header"></div>
-            <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon ui-btn-right">Menu</a>
+            <div data-type="horizontal" data-role="controlgroup" class="ui-btn-right" data-theme="b">
+                <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon">Menu</a>
+            </div>
         </div>
 
         <div role="main" class="ui-content">
@@ -187,10 +189,10 @@
                 <tbody></tbody>
             </table>
 
-            <div data-role="popup" id="popupEvent" class="ui-content" data-theme="a"></div>
+            <div data-role="popup" id="popupEvent" class="ui-content" data-theme="b"></div>
         </div>
 
-        <div data-role="panel" id="menu_panel" data-display="overlay">
+        <div data-role="panel" id="menu_panel" data-display="overlay" data-theme="b">
             <ul data-role="listview">
                 <!-- <li><a data-ajax="false" href="/zport/dmd/Dashboard">Dashboard</a></li> -->
                 <li><a data-ajax="false" href="/zport/dmd/Events/evconsole">Events</a></li>
@@ -202,7 +204,7 @@
             </ul>
         </div>
 
-        <div data-role="footer" data-position="fixed">
+        <div data-role="footer" data-position="fixed" data-theme="b">
             <input data-role="button" type="button" class="paginator_left" value="Previous page" />
             <span class="paginator_total"></span>
             <input data-role="button" type="button" class="paginator_right" value="Next page" />

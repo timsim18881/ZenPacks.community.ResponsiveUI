@@ -15,7 +15,7 @@ import ZenPacks.community.ResponsiveUI.patches
 
 unused(Globals)
 
-META_RESPONSIVE = '<meta name="viewport" content="width=device-width, user-scalable=yes">'
+META_RESPONSIVE = '<meta name="viewport" content="width=device-width, user-scalable=yes"> <meta responsiveuimarker="true">'
 
 
 # Patches login form by adding responsive CSS into it

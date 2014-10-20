@@ -2,6 +2,7 @@
 	height: 45px;
 	background: url('/zport/dmd/logo.png') no-repeat scroll 55px 7px transparent;
 	background-color: #000; /*rgba(0, 0, 0, 0.7);*/
+	border-bottom: 2px solid rgb(37, 165, 225);
 }
 
 .severity-critical,

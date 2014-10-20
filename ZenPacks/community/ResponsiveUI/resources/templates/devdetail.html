@@ -351,7 +351,9 @@
     <div data-role="page"  id="deviceDetailNav">
         <div data-role="header">
             <div id="mobile_header"></div>
-            <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon ui-btn-right">Menu</a>
+            <div data-type="horizontal" data-role="controlgroup" class="ui-btn-right" data-theme="b">
+                <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon">Menu</a>
+            </div>
         </div>
 
         <div role="main" class="ui-content">
@@ -412,8 +414,12 @@
     <div data-role="page"  id="component">
         <div data-role="header">
             <div id="mobile_header"></div>
-            <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon ui-btn-right">Menu</a>
-            <a href="#deviceDetailNav" data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
+            <div data-type="horizontal" data-role="controlgroup" class="ui-btn-left" data-theme="b">
+                <a href="#deviceDetailNav" data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
+            </div>
+            <div data-type="horizontal" data-role="controlgroup" class="ui-btn-right" data-theme="b">
+                <a href="#menu_panel" class="jqm-navmenu-link ui-btn ui-btn-icon-notext ui-corner-all ui-icon-bars ui-nodisc-icon ui-alt-icon">Menu</a>
+            </div>
         </div>
 
         <div role="main" class="ui-content">
@@ -428,7 +434,7 @@
             </table>
         </div>
 
-        <div data-role="panel" id="component_details_panel" data-position="right" data-display="overlay" data-theme="a">
+        <div data-role="panel" id="component_details_panel" data-position="right" data-display="overlay" data-theme="b">
             <h4>Details</h4>
             <table data-role="table" id="component_details" class="table-stripe ui-responsive" data-column-btn-theme="b">
                 <tbody></tbody>
@@ -436,7 +442,7 @@
         </div>
     </div>
 
-    <div data-role="panel" id="menu_panel" data-display="overlay" data-theme="a">
+    <div data-role="panel" id="menu_panel" data-display="overlay" data-theme="b">
         <ul id="sidebar">
             <!-- <li><a data-ajax="false" href="/zport/dmd/Dashboard">Dashboard</a></li> -->
             <li><a data-ajax="false" href="/zport/dmd/Events/evconsole">Events</a></li>
