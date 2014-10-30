@@ -6,23 +6,6 @@ Make life of mobile Zenoss users a bit easier by adding light user interface to 
 ZenPack also extends Zenoss with settings for User Interface colors and full-screen mode.
 
 
-Tune Zenoss colors for your own
--------------------------------
-
-Zenpack brings a color settings to Zenoss:
- 
- - navigation bar
- - menu
- - sidebar panel
- - table rows
-
-
-Zen mode ON
------------
-
-A small button in the footer to hide sidebar and navigation. Cool for small screens.
-
-
 Mobile User Interface
 ---------------------
 
@@ -37,5 +20,21 @@ pages for:
  - Device components
  - Device events
 
-
 This can be turn ON/OFF on User Interface settings page in Zenoss.
+
+
+Tune Zenoss colors for your own
+-------------------------------
+
+Zenpack brings a color settings to Zenoss:
+
+ - navigation bar
+ - menu
+ - sidebar panel
+ - table rows
+
+
+Zen mode ON
+-----------
+
+A small button in the footer to hide sidebar and navigation. Cool for small screens.

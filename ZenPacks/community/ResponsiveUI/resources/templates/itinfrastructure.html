@@ -237,11 +237,11 @@
                     + short_name
                     + '</a></li>'
                 );
-                
+
                 $("#form_device_class").append(
                     "<option value='" + short_name + "'>" + short_name + "</option>"
                 );
-                
+
                 $.each(v.children, function (k, v2) {
                     append_device_class(v2);
                 });
@@ -303,18 +303,18 @@
             <div data-role="popup" id="add_device" class="ui-content" data-theme="b">
                 <div style="padding:10px 20px;">
                     <h3>Add a Single Device</h3>
-                    
+
                     <label for="form_name_or_ip" class="ui-hidden-accessible">Name or IP:</label>
                     <input type="text" name="deviceName" id="form_name_or_ip" value="" placeholder="Name or IP" data-theme="a">
-                    
+
                     <label for="form_title" class="ui-hidden-accessible">Title:</label>
                     <input name="title" id="form_title" value="" placeholder="Title" data-theme="a">
-                    
+
                     <label for="form_device_class" class="ui-hidden-accessible">Device Class:</label>
                     <select name="deviceClass" id="form_device_class" value="/" placeholder="/" data-theme="a">
                         <option selected value="/">/</option>>
                     </select>
-                    
+
                     <label for="form_collector" class="ui-hidden-accessible">Collector:</label>
                     <input name="collector" id="form_collector" value="localhost" placeholder="Collector" data-theme="a">
 
@@ -340,6 +340,7 @@
                 <li><a data-ajax="false" href="/zport/dmd/itinfrastructure">Infrastructure</a></li>
                 <!-- <li><a data-ajax="false" href="/zport/dmd/reports">Reports</a></li>
                 <li><a data-ajax="false" href="/zport/dmd/editSettings">Advanced</a></li> -->
+                <li><a href="/zport/dmd/logoutUser">Sign Out</a></li>
                 <li><a href="http://www.zenoss.com/">Zenoss Inc.</a></li>
                 <li><a href="http://www.zenoss.org/">Community</a></li>
                 <li>
